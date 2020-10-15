@@ -1,11 +1,19 @@
-## My Project
+## Customizing the AWS Control Tower account factory with AWS Lambda and AWS Service Catalog
 
-TODO: Fill this README out!
+This solution is a part of the blog post “Customizing the AWS Control Tower account factory with AWS Lambda and AWS Service Catalog”
 
-Be sure to:
+## Content
 
-* Change the title in this README
-* Edit your repository description on GitHub
+__control-tower-account-factory-solution.yml__ – AWS CloudFormation template to deploy solution.
+
+__src__ – AWS Lambda function code.
+
+__config-template.yml__ – Products deployment template for new accounts.
+
+__update-template.yml__ - Products update template.
+
+__configuration-examples__ - Configuration examples
+
 
 ## Security
 
