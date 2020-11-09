@@ -199,22 +199,6 @@ Resources:
                   - lambda:InvokeFunction
                 Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${FunctionName}'
 
-  S3Bucket:
-    Type: AWS::S3::Bucket
-    Condition: CreateConfigurationBucket
-    Properties:
-      BucketName: !Ref ConfigurationBucketName
-      AccessControl: BucketOwnerFullControl
-      NotificationConfiguration:
-        LambdaConfigurations: 
-          - Event: s3:ObjectCreated:*
-            Filter: 
-              S3Key: 
-                Rules:
-                  - Name: suffix
-                    Value: !Ref UpdateFileName
-            Function: !GetAtt AccountFactoryFunction.Arn
-
   TrackingTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
@@ -260,6 +244,32 @@ Resources:
       Runtime: python3.8
       Timeout: 900
       ReservedConcurrentExecutions: 10      
+
+  PermissionS3ToLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AccountFactoryFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "s3.amazonaws.com"
+      SourceAccount: !Ref "AWS::AccountId"
+      SourceArn: !Sub 'arn:aws:s3:::${ConfigurationBucketName}'
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Condition: CreateConfigurationBucket
+    DependsOn: PermissionS3ToLambda
+    Properties:
+      BucketName: !Ref ConfigurationBucketName
+      AccessControl: BucketOwnerFullControl
+      NotificationConfiguration:
+        LambdaConfigurations: 
+          - Event: s3:ObjectCreated:*
+            Filter: 
+              S3Key: 
+                Rules:
+                  - Name: suffix
+                    Value: !Ref UpdateFileName
+            Function: !GetAtt AccountFactoryFunction.Arn
 
   AccountFactoryStateMachine:
     Type: 'AWS::StepFunctions::StateMachine'
