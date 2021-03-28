@@ -26,6 +26,7 @@ Parameters:
     - false  
   ConfigurationBucketName:
     Description: Name of Amazon S3 Configuration Bucket
+    MinLength: 3    
     Type: String
   ConfigurationFileName:
     Description: Name and prefix of the configuration file
@@ -37,6 +38,7 @@ Parameters:
     Default: update.yml     
   SourceCodeBucketName:
     Description: Name of Amazon S3 Bucket with lambda zipped source code
+    MinLength: 3
     Type: String       
   SourceCodePackageName:
     Description: Name of code package including prefix
