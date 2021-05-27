@@ -265,6 +265,11 @@ Resources:
     Properties:
       BucketName: !Ref ConfigurationBucketName
       AccessControl: BucketOwnerFullControl
+      BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                KMSMasterKeyID: !Ref KMSKey  
+                SSEAlgorithm: aws:kms      
       NotificationConfiguration:
         LambdaConfigurations: 
           - Event: s3:ObjectCreated:*
