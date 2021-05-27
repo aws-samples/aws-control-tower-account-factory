@@ -265,6 +265,8 @@ Resources:
     Properties:
       BucketName: !Ref ConfigurationBucketName
       AccessControl: BucketOwnerFullControl
+      VersioningConfiguration:
+        Status: Enabled      
       BucketEncryption:
           ServerSideEncryptionConfiguration:
             - ServerSideEncryptionByDefault:
