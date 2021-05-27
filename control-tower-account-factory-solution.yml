@@ -132,6 +132,10 @@ Resources:
                   - cloudformation:List*
                   - cloudformation:UpdateStackSet
                   - kms:Decrypt
+                  - kms:Encrypt
+                  - kms:Decrypt
+                  - kms:ReEncrypt*
+                  - kms:GenerateDataKey*
                   - iam:GetRole
                   - s3:GetObject
                 Resource: "*"                            
@@ -359,6 +363,41 @@ Resources:
       SourceArn: !GetAtt ControlTowerEvent.Arn
       SourceAccount: !Ref "AWS::AccountId"
 
+  KMSKey:
+    Type: AWS::KMS::Key   
+    Properties:
+      Description: Encryption Key for SNS
+      Enabled: 'true'
+      EnableKeyRotation: 'false'
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-default-1
+        Statement:
+          - Sid: Root Access
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'     
+            Action: 'kms:*'
+            Resource: '*'
+
+          - Sid: User Access
+            Effect: Allow
+            Principal:
+              AWS: 
+                - !GetAtt AccountFactoryLambdaRole.Arn
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+              - kms:CreateGrant
+              - kms:RevokeGrant
+              - kms:List*
+              - kms:Get*
+              - kms:RetireGrant
+            Resource: '*'
+
   SNSTopic:
     Type: AWS::SNS::Topic
     Condition: CreateNotification
@@ -367,3 +406,4 @@ Resources:
         - Endpoint: !Ref NotificationEmail
           Protocol: "email"
       TopicName: !Ref TopicName
+      KmsMasterKeyId: !Ref KMSKey
